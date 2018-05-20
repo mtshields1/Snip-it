@@ -23,6 +23,10 @@
             android:name="com.example.ch.snip_it.SelectContactActivity"
             android:label="SelectContactActivity"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.example.ch.snip_it.users.CreateUserActivity"
+            android:label="CreateUserActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

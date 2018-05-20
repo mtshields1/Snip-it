@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.ch.snip_it.users.CreateUserActivity;
+import com.example.ch.snip_it.users.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -25,6 +27,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The main activity for snip-it
@@ -70,14 +77,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }));
-
-//
-//        // Request contact permissions
-//        ActivityCompat.requestPermissions(MainActivity.this,
-//                new String[]{Manifest.permission.READ_CONTACTS},
-//                1);
-//
-//        setButtonListeners();
     }
 
     private void signIn(GoogleSignInClient mGoogleSignInCient) {
@@ -105,6 +104,10 @@ public class MainActivity extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             firebaseAuthWithGoogle(account);
 
+            // Sign in success? Have the user create a username and password
+            Intent sendIntent = new Intent(MainActivity.this, CreateUserActivity.class);
+            MainActivity.this.startActivity(sendIntent);
+
             // Signed in successfully, show authenticated UI.
             //updateUI(account);
             setButtonListeners();
@@ -117,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        //Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -125,8 +127,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            //Log.d(TAG, "signInWithCredential:success");
+                            // Sign in success
                             FirebaseUser user = mAuth.getCurrentUser();
                             //updateUI(user);
                         } else {
@@ -153,34 +154,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode)
-        {
-            case 1: {
-
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                {
-                    return;
-                }
-                else
-                {
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    Toast.makeText(MainActivity.this, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-        }
-    }
-
-    @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
+        // Check if user is signed in (non-null) and update UI accordingly. This indicates they previously authenticated with firebase
         FirebaseUser currentUser = mAuth.getCurrentUser();
         //updateUI(currentUser);
     }
