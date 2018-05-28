@@ -7,17 +7,13 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.ch.snip_it.R;
-import com.google.android.gms.common.SignInButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * Created by Owner on 5/20/2018.
+ * Activity to create a new user for snip it
  */
-
 public class CreateUserActivity extends AppCompatActivity
 {
     @Override
@@ -31,19 +27,21 @@ public class CreateUserActivity extends AppCompatActivity
             public void onClick(View view) {
                 EditText usernameText = (EditText)findViewById(R.id.userNameInput);
                 EditText passwordText = (EditText)findViewById(R.id.passwordText);
-                createSnipItUser(usernameText.getText().toString(), passwordText.getText().toString());
+                // Get Firebase Authentication instance
+                createSnipItUser(usernameText.getText().toString(), passwordText.getText().toString(), getIntent().getStringExtra("USER_EMAIL"),
+                        getIntent().getStringExtra("USER_ID"));
                 finish();
             }
         }));
     }
 
-    public void createSnipItUser(String username, String password)
+    public void createSnipItUser(String username, String password, String email, String id)
     {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("Snip-it-user-data");
         DatabaseReference usersRef = ref.child("users");
         DatabaseReference userNameRef = usersRef.child(username);
 
-        userNameRef.setValue(new User(username, password));
+        userNameRef.setValue(new User(username, password, email, id));
     }
 }

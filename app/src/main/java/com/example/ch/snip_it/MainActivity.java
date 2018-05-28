@@ -1,10 +1,7 @@
 package com.example.ch.snip_it;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +10,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.ch.snip_it.users.CreateUserActivity;
-import com.example.ch.snip_it.users.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -27,11 +23,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * The main activity for snip-it
@@ -41,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     int RC_SIGN_IN = 0;
     GoogleSignInClient signedInUser;
     private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,9 +96,13 @@ public class MainActivity extends AppCompatActivity {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             firebaseAuthWithGoogle(account);
 
-            // Sign in success? Have the user create a username and password
-            Intent sendIntent = new Intent(MainActivity.this, CreateUserActivity.class);
-            MainActivity.this.startActivity(sendIntent);
+            // Sign in success? Have the user create a username and password if they weren't authenticated with Firebase onStart
+            if (currentUser == null){
+                Intent sendIntent = new Intent(MainActivity.this, CreateUserActivity.class);
+                sendIntent.putExtra("USER_EMAIL", account.getEmail());
+                sendIntent.putExtra("USER_ID", account.getId());
+                MainActivity.this.startActivity(sendIntent);
+            }
 
             // Signed in successfully, show authenticated UI.
             //updateUI(account);
@@ -127,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success
+                            // Sign in success. Set the user value
                             FirebaseUser user = mAuth.getCurrentUser();
                             //updateUI(user);
                         } else {
@@ -157,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly. This indicates they previously authenticated with firebase
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        currentUser = mAuth.getCurrentUser();
         //updateUI(currentUser);
     }
 }
