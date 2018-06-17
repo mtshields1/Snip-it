@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.ch.snip_it.users.CreateUserActivity;
+import com.example.ch.snip_it.users.UserHomePage;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -106,7 +107,10 @@ public class MainActivity extends AppCompatActivity {
 
             // Signed in successfully, show authenticated UI.
             //updateUI(account);
-            setButtonListeners();
+            //setButtonListeners();
+            Intent userPageIntent = new Intent(MainActivity.this, UserHomePage.class);
+            userPageIntent.putExtra("USER_ID", account.getId());
+            MainActivity.this.startActivity(userPageIntent);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
@@ -143,8 +147,8 @@ public class MainActivity extends AppCompatActivity {
         sendButtonListener.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent sendIntent = new Intent(MainActivity.this, SelectContactActivity.class);
-                MainActivity.this.startActivity(sendIntent);
+//                Intent sendIntent = new Intent(MainActivity.this, SelectContactActivity.class);
+//                MainActivity.this.startActivity(sendIntent);
             }
         });
     }
