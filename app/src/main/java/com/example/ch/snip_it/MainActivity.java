@@ -4,10 +4,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.ch.snip_it.users.CreateUserActivity;
 import com.example.ch.snip_it.users.UserHomePage;
@@ -26,11 +23,13 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 /**
- * The main activity for snip-it
+ * The main activity for Snip-it
  */
 public class MainActivity extends AppCompatActivity {
 
     int RC_SIGN_IN = 0;
+    int USER_PAGE_REQUEST_CODE = 4;
+    String dbKeyString = "";
     GoogleSignInClient signedInUser;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -55,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        //updateUI(account);
 
         setContentView(R.layout.activity_main);
 
@@ -88,6 +86,9 @@ public class MainActivity extends AppCompatActivity {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
         }
+        else if (requestCode == USER_PAGE_REQUEST_CODE){
+            dbKeyString = data.getStringExtra("dbKey");
+        }
     }
 
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
@@ -102,20 +103,28 @@ public class MainActivity extends AppCompatActivity {
                 Intent sendIntent = new Intent(MainActivity.this, CreateUserActivity.class);
                 sendIntent.putExtra("USER_EMAIL", account.getEmail());
                 sendIntent.putExtra("USER_ID", account.getId());
-                MainActivity.this.startActivity(sendIntent);
+                MainActivity.this.startActivityForResult(sendIntent, USER_PAGE_REQUEST_CODE);
             }
 
-            // Signed in successfully, show authenticated UI.
-            //updateUI(account);
-            //setButtonListeners();
+            // ********************* TODO: FOR TEST. DELETE ****************** //
+
+//            String id = "1234908";
+//            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+//            DatabaseReference ref = database.getReference("Snip-it-user-data");
+//            DatabaseReference usersRef = ref.child("users");
+//            String key = usersRef.push().getKey();
+//            usersRef.child(key).setValue(new User("newKhurl", "pword", "khurl@khurl.com", id, key));
+//            //usersRef.setValue(
+//            //DatabaseReference userNameRef = usersRef.child(id);
+//            dbKeyString = key;
+
+            // ******************** TODO: TESTING END HERE ******************** //
+
             Intent userPageIntent = new Intent(MainActivity.this, UserHomePage.class);
             userPageIntent.putExtra("USER_ID", account.getId());
+            userPageIntent.putExtra("DB_KEY", dbKeyString);
             MainActivity.this.startActivity(userPageIntent);
         } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            //Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
-            //updateUI(null);
         }
     }
 
@@ -129,28 +138,11 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success. Set the user value
                             FirebaseUser user = mAuth.getCurrentUser();
-                            //updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
-                            //Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            //Snackbar.make(findViewById(R.id.main_layout), "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                            //updateUI(null);
                         }
-
-                        // ...
                     }
                 });
-    }
-
-    public void setButtonListeners(){
-        Button sendButtonListener = findViewById(R.id.sendButton);
-        sendButtonListener.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Intent sendIntent = new Intent(MainActivity.this, SelectContactActivity.class);
-//                MainActivity.this.startActivity(sendIntent);
-            }
-        });
     }
 
     @Override
@@ -158,6 +150,5 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly. This indicates they previously authenticated with firebase
         currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.ch.snip_it.users;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -7,7 +8,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.ch.snip_it.R;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -28,20 +28,24 @@ public class CreateUserActivity extends AppCompatActivity
                 EditText usernameText = (EditText)findViewById(R.id.userNameInput);
                 EditText passwordText = (EditText)findViewById(R.id.passwordText);
                 // Get Firebase Authentication instance
-                createSnipItUser(usernameText.getText().toString(), passwordText.getText().toString(), getIntent().getStringExtra("USER_EMAIL"),
+                String dbKey = createSnipItUser(usernameText.getText().toString(), passwordText.getText().toString(), getIntent().getStringExtra("USER_EMAIL"),
                         getIntent().getStringExtra("USER_ID"));
+                Intent output = new Intent();
+                output.putExtra("dbKey", dbKey);
+                setResult(RESULT_OK, output);
                 finish();
             }
         }));
     }
 
-    public void createSnipItUser(String username, String password, String email, String id)
+    public String createSnipItUser(String username, String password, String email, String id)
     {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("Snip-it-user-data");
         DatabaseReference usersRef = ref.child("users");
-        DatabaseReference userNameRef = usersRef.child(username);
+        String dbKey = usersRef.push().getKey();
 
-        userNameRef.setValue(new User(username, password, email, id));
+        usersRef.setValue(new User(username, password, email, id, dbKey));
+        return dbKey;
     }
 }
