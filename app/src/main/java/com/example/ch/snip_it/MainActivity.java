@@ -120,9 +120,11 @@ public class MainActivity extends AppCompatActivity {
 
             // ******************** TODO: TESTING END HERE ******************** //
 
+            // TODO: need to return all dbKeys under users to get correct user. dbKeyString is empty here from above tests. (Hardcoded value is for testing)
+
             Intent userPageIntent = new Intent(MainActivity.this, UserHomePage.class);
             userPageIntent.putExtra("USER_ID", account.getId());
-            userPageIntent.putExtra("DB_KEY", dbKeyString);
+            userPageIntent.putExtra("DB_KEY", "-LIbhSQRcX5V9LT3mJBe");
             MainActivity.this.startActivity(userPageIntent);
         } catch (ApiException e) {
         }
