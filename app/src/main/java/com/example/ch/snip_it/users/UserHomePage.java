@@ -24,16 +24,16 @@ public class UserHomePage extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
-        queryUserData(getIntent().getStringExtra("USER_ID"), getIntent().getStringExtra("DB_KEY"));
+        queryUserData(getIntent().getStringExtra("USER_ID"));
     }
 
-    public void queryUserData(final String userId, final String dbKey) {
-        DatabaseReference databaseReference = database.getReference();
-        databaseReference.addValueEventListener(new ValueEventListener() {
+    public void queryUserData(final String userId) {
+        DatabaseReference databaseReference = database.getReference("Snip-it-user-data/users");
+        databaseReference.orderByChild("id").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot dataSnapshot1: dataSnapshot.getChildren()){
-                    userString = dataSnapshot1.child("users").child(dbKey).child("username").getValue().toString();
+                for (DataSnapshot userDataSnapshot: dataSnapshot.getChildren()){
+                    userString = userDataSnapshot.child("username").getValue().toString();
                     setContentView(R.layout.user_homepage);
                     TextView usernameSetText = (TextView) findViewById(R.id.userHomePageText);
                     usernameSetText.setText("Welcome back to Snip-it, " + userString);
