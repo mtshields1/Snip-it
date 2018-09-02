@@ -11,6 +11,9 @@ import com.example.ch.snip_it.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
 /**
  * Activity to create a new user for snip it
  */
@@ -45,7 +48,7 @@ public class CreateUserActivity extends AppCompatActivity
         DatabaseReference usersRef = ref.child("users");
         String dbKey = usersRef.push().getKey();
 
-        usersRef.setValue(new User(username, password, email, id, dbKey));
+        usersRef.setValue(new User(username, password, email, id, dbKey, new ArrayList<String>()));
         return dbKey;
     }
 }

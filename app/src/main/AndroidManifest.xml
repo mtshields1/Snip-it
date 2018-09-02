@@ -31,6 +31,10 @@
             android:name="com.example.ch.snip_it.users.UserHomePage"
             android:label="UserHomePage"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="com.example.ch.snip_it.users.FriendActivity"
+            android:label="FriendActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
