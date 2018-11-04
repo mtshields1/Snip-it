@@ -29,9 +29,9 @@ public class CreateUserActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 EditText usernameText = (EditText)findViewById(R.id.userNameInput);
-                EditText passwordText = (EditText)findViewById(R.id.passwordText);
+//                EditText passwordText = (EditText)findViewById(R.id.passwordText);
                 // Get Firebase Authentication instance
-                String dbKey = createSnipItUser(usernameText.getText().toString(), passwordText.getText().toString(), getIntent().getStringExtra("USER_EMAIL"),
+                String dbKey = createSnipItUser(usernameText.getText().toString(), getIntent().getStringExtra("USER_EMAIL"),
                         getIntent().getStringExtra("USER_ID"));
                 Intent output = new Intent();
                 output.putExtra("dbKey", dbKey);
@@ -41,14 +41,14 @@ public class CreateUserActivity extends AppCompatActivity
         }));
     }
 
-    public String createSnipItUser(String username, String password, String email, String id)
+    public String createSnipItUser(String username, String email, String id)
     {
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference ref = database.getReference("Snip-it-user-data");
         DatabaseReference usersRef = ref.child("users");
         String dbKey = usersRef.push().getKey();
 
-        usersRef.setValue(new User(username, password, email, id, dbKey, new ArrayList<String>()));
+        usersRef.setValue(new User(username, email, id, dbKey, new ArrayList<String>()));
         return dbKey;
     }
 }
